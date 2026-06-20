@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MetricsChart } from "@/components/MetricsChart";
 import { SummaryCards } from "@/components/SummaryCards";
 import { RepoSelector } from "@/components/RepoSelector";
@@ -27,6 +28,7 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [days, setDays] = useState(30);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetch("/api/repos")
@@ -55,6 +57,12 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">DevFlow Dashboard</h1>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push("/repos")}
+              className="text-sm text-gray-400 hover:text-white border border-gray-700 rounded-lg px-3 py-1.5 transition-colors"
+            >
+              Manage Repos
+            </button>
             <select
               value={days}
               onChange={(e) => setDays(Number(e.target.value))}
