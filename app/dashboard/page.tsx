@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MetricsChart } from "@/components/MetricsChart";
 import { SummaryCards } from "@/components/SummaryCards";
 import { RepoSelector } from "@/components/RepoSelector";
+import { ContributorChart } from "@/components/ContributorChart";
 
 type Repo = { id: string; name: string; fullName: string };
 type Summary = {
@@ -20,12 +21,19 @@ type DailyMetric = {
   commits: number;
   avgCycleTimeMinutes: number | null;
 };
+type Contributor = {
+  actor: string;
+  commits: number;
+  prsOpened: number;
+  prsMerged: number;
+};
 
 export default function DashboardPage() {
   const [repos, setRepos] = useState<Repo[]>([]);
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
   const [metrics, setMetrics] = useState<DailyMetric[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
+  const [contributors, setContributors] = useState<Contributor[]>([]);
   const [days, setDays] = useState(30);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -42,11 +50,14 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!selectedRepo) return;
     setLoading(true);
-    fetch(`/api/metrics?repoId=${selectedRepo}&days=${days}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setMetrics(data.metrics ?? []);
-        setSummary(data.summary ?? null);
+    Promise.all([
+      fetch(`/api/metrics?repoId=${selectedRepo}&days=${days}`).then((r) => r.json()),
+      fetch(`/api/contributors?repoId=${selectedRepo}&days=${days}`).then((r) => r.json()),
+    ])
+      .then(([metricsData, contributorsData]) => {
+        setMetrics(metricsData.metrics ?? []);
+        setSummary(metricsData.summary ?? null);
+        setContributors(contributorsData ?? []);
       })
       .finally(() => setLoading(false));
   }, [selectedRepo, days]);
@@ -86,6 +97,7 @@ export default function DashboardPage() {
           </div>
         ) : (
           <MetricsChart metrics={metrics} />
+          {contributors.length > 0 && <ContributorChart contributors={contributors} />}
         )}
       </div>
     </div>
