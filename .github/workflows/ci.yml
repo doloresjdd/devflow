@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://devflow:devflow@localhost:5432/devflow
+          REDIS_URL: redis://localhost:6379
+          GITHUB_CLIENT_ID: placeholder
+          GITHUB_CLIENT_SECRET: placeholder
+          GITHUB_WEBHOOK_SECRET: placeholder
+          NEXTAUTH_URL: http://localhost:3000
+          AUTH_SECRET: placeholder-secret-for-build
