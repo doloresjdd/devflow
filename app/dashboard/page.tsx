@@ -96,8 +96,10 @@ export default function DashboardPage() {
             No data yet. Add a repo and configure the GitHub webhook to start tracking.
           </div>
         ) : (
-          <MetricsChart metrics={metrics} />
-          {contributors.length > 0 && <ContributorChart contributors={contributors} />}
+          <>
+            <MetricsChart metrics={metrics} />
+            {contributors.length > 0 && <ContributorChart contributors={contributors} />}
+          </>
         )}
       </div>
     </div>
