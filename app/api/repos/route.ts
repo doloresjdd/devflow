@@ -29,8 +29,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No GitHub token" }, { status: 400 });
   }
 
-  // Register webhook on GitHub
-  await registerWebhook(account.access_token, fullName);
+  // Register webhook on GitHub (skip in local dev where localhost isn't reachable)
+  try {
+    await registerWebhook(account.access_token, fullName);
+  } catch (e) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("Webhook registration skipped (localhost not reachable):", (e as Error).message);
+    } else {
+      throw e;
+    }
+  }
 
   const repo = await prisma.repo.upsert({
     where: { githubId },
