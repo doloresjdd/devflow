@@ -23,14 +23,14 @@ export async function GET(req: NextRequest) {
   const result = {
     metrics,
     summary: {
-      totalPRsMerged: metrics.reduce((s, m) => s + m.prMerged, 0),
-      totalCommits: metrics.reduce((s, m) => s + m.commits, 0),
+      totalPRsMerged: metrics.reduce((s: number, m) => s + m.prMerged, 0),
+      totalCommits: metrics.reduce((s: number, m) => s + m.commits, 0),
       avgCycleTimeMinutes:
         Math.round(
-          metrics.filter((m) => m.avgCycleTimeMinutes).reduce((s, m) => s + (m.avgCycleTimeMinutes ?? 0), 0) /
+          metrics.filter((m) => m.avgCycleTimeMinutes).reduce((s: number, m) => s + (m.avgCycleTimeMinutes ?? 0), 0) /
             (metrics.filter((m) => m.avgCycleTimeMinutes).length || 1)
         ),
-      deployFrequency: (metrics.reduce((s, m) => s + m.prMerged, 0) / days).toFixed(2),
+      deployFrequency: (metrics.reduce((s: number, m) => s + m.prMerged, 0) / days).toFixed(2),
     },
   };
 
