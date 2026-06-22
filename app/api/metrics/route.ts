@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     prisma.dailyMetric.findMany({ where: { repoId, date: { gte: prevSince, lt: since } }, orderBy: { date: "asc" } }),
   ]);
 
-  const repo = await prisma.repo.findUnique({ where: { id: repoId }, select: { fullName: true, updatedAt: true } });
+  const repo = await prisma.repo.findUnique({ where: { id: repoId }, select: { fullName: true, createdAt: true } });
 
   function summarize(data: typeof metrics) {
     let totalPRsMerged = 0, totalCommits = 0, cycleTimeSum = 0, cycleTimeCount = 0;

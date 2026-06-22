@@ -35,7 +35,7 @@ export default function DashboardPage() {
   const [metrics, setMetrics] = useState<DailyMetric[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [contributors, setContributors] = useState<Contributor[]>([]);
-  const [repoMeta, setRepoMeta] = useState<{ fullName: string; updatedAt: string } | null>(null);
+  const [repoMeta, setRepoMeta] = useState<{ fullName: string; createdAt: string } | null>(null);
   const [days, setDays] = useState(30);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -94,7 +94,7 @@ export default function DashboardPage() {
           <SummaryCards
             summary={summary}
             repoName={repoMeta?.fullName}
-            lastUpdated={repoMeta?.updatedAt}
+            lastUpdated={repoMeta?.createdAt}
           />
         )}
 
