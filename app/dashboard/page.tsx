@@ -13,6 +13,7 @@ type Summary = {
   totalCommits: number;
   avgCycleTimeMinutes: number;
   deployFrequency: string;
+  trends?: { commits: number | null; prsMerged: number | null; deployFrequency: number | null };
 };
 type DailyMetric = {
   date: string;
@@ -34,6 +35,7 @@ export default function DashboardPage() {
   const [metrics, setMetrics] = useState<DailyMetric[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [contributors, setContributors] = useState<Contributor[]>([]);
+  const [repoMeta, setRepoMeta] = useState<{ fullName: string; updatedAt: string } | null>(null);
   const [days, setDays] = useState(30);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -57,6 +59,7 @@ export default function DashboardPage() {
       .then(([metricsData, contributorsData]) => {
         setMetrics(metricsData.metrics ?? []);
         setSummary(metricsData.summary ?? null);
+        setRepoMeta(metricsData.repo ?? null);
         setContributors(contributorsData ?? []);
       })
       .finally(() => setLoading(false));
@@ -87,13 +90,29 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {summary && <SummaryCards summary={summary} />}
+        {summary && (
+          <SummaryCards
+            summary={summary}
+            repoName={repoMeta?.fullName}
+            lastUpdated={repoMeta?.updatedAt}
+          />
+        )}
 
         {loading ? (
           <div className="text-gray-400 text-center py-20">Loading metrics...</div>
         ) : metrics.length === 0 ? (
-          <div className="text-gray-500 text-center py-20">
-            No data yet. Add a repo and configure the GitHub webhook to start tracking.
+          <div className="bg-gray-900 border border-gray-800 border-dashed rounded-xl p-16 text-center">
+            <p className="text-2xl mb-2">📊</p>
+            <p className="text-gray-300 font-medium mb-1">No data yet</p>
+            <p className="text-gray-500 text-sm">
+              Push a commit or merge a PR to start tracking DORA metrics.
+            </p>
+            <button
+              onClick={() => router.push("/repos")}
+              className="mt-4 text-sm text-blue-400 hover:text-blue-300 underline"
+            >
+              Manage tracked repos →
+            </button>
           </div>
         ) : (
           <>
