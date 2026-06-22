@@ -20,17 +20,26 @@ export async function GET(req: NextRequest) {
     orderBy: { date: "asc" },
   });
 
+  let totalPRsMerged = 0;
+  let totalCommits = 0;
+  let cycleTimeSum = 0;
+  let cycleTimeCount = 0;
+  for (const m of metrics) {
+    totalPRsMerged += m.prMerged;
+    totalCommits += m.commits;
+    if (m.avgCycleTimeMinutes) {
+      cycleTimeSum += m.avgCycleTimeMinutes;
+      cycleTimeCount++;
+    }
+  }
+
   const result = {
     metrics,
     summary: {
-      totalPRsMerged: metrics.reduce((s: number, m) => s + m.prMerged, 0),
-      totalCommits: metrics.reduce((s: number, m) => s + m.commits, 0),
-      avgCycleTimeMinutes:
-        Math.round(
-          metrics.filter((m) => m.avgCycleTimeMinutes).reduce((s: number, m) => s + (m.avgCycleTimeMinutes ?? 0), 0) /
-            (metrics.filter((m) => m.avgCycleTimeMinutes).length || 1)
-        ),
-      deployFrequency: (metrics.reduce((s: number, m) => s + m.prMerged, 0) / days).toFixed(2),
+      totalPRsMerged,
+      totalCommits,
+      avgCycleTimeMinutes: cycleTimeCount > 0 ? Math.round(cycleTimeSum / cycleTimeCount) : 0,
+      deployFrequency: (totalPRsMerged / days).toFixed(2),
     },
   };
 
