@@ -21,7 +21,7 @@ export async function GET() {
     where: { userId: session.user.id },
     select: { githubId: true },
   });
-  const trackedIds = new Set(tracked.map((r) => r.githubId));
+  const trackedIds = new Set(tracked.map((r: { githubId: number }) => r.githubId));
 
   return NextResponse.json(
     repos.map((r) => ({ ...r, tracked: trackedIds.has(r.id) }))
