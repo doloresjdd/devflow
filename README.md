@@ -2,7 +2,10 @@
 
 A full-stack DORA metrics dashboard that ingests real-time GitHub webhook events to track engineering team productivity — cycle time, deployment frequency, PR throughput, and contributor activity.
 
-**Live Demo:** http://44.220.245.228:3000
+## Screenshots
+
+![Dashboard](docs/dashboard.png)
+![Contributor Activity](docs/contributor.png)
 
 ## Tech Stack
 
